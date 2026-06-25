@@ -108,6 +108,7 @@ input[type="date"], input[type="datetime-local"] { color-scheme: dark; }
   color: #0f1420;
   font-weight: 600;
 }
+.chip.status-pending { background: #4a5570; color: #d6deef; }
 .chip.status-scheduled { background: var(--scheduled); color: #fff; }
 .chip.status-in_progress { background: var(--in_progress); }
 .chip.status-done { background: var(--done); }
@@ -180,6 +181,7 @@ input[type="date"], input[type="datetime-local"] { color-scheme: dark; }
   box-shadow: 0 1px 4px rgba(0,0,0,.3);
   border: 1px solid rgba(255,255,255,.15);
 }
+.bar.status-pending { background: #4a5570; }
 .bar.status-scheduled { background: var(--scheduled); }
 .bar.status-in_progress { background: var(--in_progress); color: #1a1200; }
 .bar.status-done { background: var(--done); color: #04200f; }
@@ -209,6 +211,7 @@ input[type="date"], input[type="datetime-local"] { color-scheme: dark; }
 .pill.maintenance, .pill.scheduled { background: rgba(242,169,59,.18); color: var(--in_progress); }
 .pill.down { background: rgba(255,90,110,.18); color: var(--conflict); }
 .pill.in_progress { background: rgba(90,107,255,.22); color: #9aa8ff; }
+.pill.pending, .pill.planned, .pill.released { background: var(--panel-2); color: var(--muted); }
 
 /* Modal */
 .modal-overlay {
@@ -229,3 +232,45 @@ input[type="date"], input[type="datetime-local"] { color-scheme: dark; }
 .modal-form-row { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
 .modal-form-row label { font-size: 12px; color: var(--muted); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+
+.hint { color: var(--muted); font-size: 12px; margin-top: 14px; }
+
+/* Work order cards + routing */
+.wo-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.wo-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+.wo-head:hover { background: var(--panel-2); }
+.wo-title { font-weight: 600; font-size: 15px; }
+.wo-sub { font-size: 12px; color: var(--muted); }
+.wo-grow { flex: 1; }
+.wo-due { font-size: 12px; color: var(--muted); }
+.wo-due.late { color: var(--conflict); font-weight: 600; }
+.wo-caret { color: var(--muted); transition: transform .15s; }
+.wo-card.open .wo-caret { transform: rotate(90deg); }
+.wo-body { display: none; border-top: 1px solid var(--border); padding: 12px 16px; }
+.wo-card.open .wo-body { display: block; }
+.wo-body-actions { display: flex; gap: 10px; margin: 10px 2px 0; flex-wrap: wrap; }
+
+.prio { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 600; }
+.prio.rush { background: rgba(255,90,110,.2); color: var(--conflict); }
+.prio.high { background: rgba(242,169,59,.2); color: var(--in_progress); }
+.prio.normal { background: var(--panel-2); color: var(--muted); }
+.prio.low { background: var(--panel-2); color: var(--muted); }
+
+.routing { width: 100%; border-collapse: collapse; font-size: 13px; }
+.routing th, .routing td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.routing th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .03em; }
+.routing .seq { font-variant-numeric: tabular-nums; color: var(--muted); width: 44px; }
+.routing tr:last-child td { border-bottom: none; }
+.warn-text { color: var(--conflict); font-size: 12px; margin: 8px 2px 0; }

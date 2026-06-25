@@ -1,9 +1,12 @@
-# Machine Resources Planner
+# Manufacturing Process Planner
 
-A lightweight internal tool for **factory / manufacturing machine scheduling** —
-plan which machine runs which job and when, spot scheduling conflicts, and track
-utilization. Built as a self-contained app with **zero external dependencies**
-(Python standard library + SQLite + a vanilla-JS frontend).
+A lightweight internal tool for **planning manufacturing processes** — model your
+shop's machines (CNC milling, turning, grinding, drilling, inspection…), define
+each part's **routing** (the ordered sequence of operations it flows through),
+and schedule those operations across machines on a Gantt timeline.
+
+Built as a self-contained app with **zero external dependencies** (Python
+standard library + SQLite + a vanilla-JS frontend).
 
 ## Run
 
@@ -14,42 +17,59 @@ python3 server.py
 ```
 
 Use a different port with `PORT=9000 python3 server.py`.
-Data is stored in `machine_planner.db` (SQLite, created on first run with a few
-sample machines/jobs to get you started).
+Data lives in `machine_planner.db` (SQLite, created on first run with sample
+machines and a 3-operation work order to get you started).
+
+## Concepts
+
+- **Machine** — a piece of equipment (type, location, status:
+  operational / maintenance / down).
+- **Work order** — a part to produce: name, part number, **quantity**, due date,
+  priority, status.
+- **Operation (routing step)** — one step in a work order's process, in sequence
+  (Op 10, 20, 30…). Each has an assigned machine, **setup time**, and **cycle
+  time per piece**. Duration is computed automatically as
+  `setup + cycle × quantity`.
 
 ## Features (MVP)
 
-- **Schedule view** — a Gantt-style timeline (machines × hours of a day) with
-  color-coded job bars by status. Click a bar to edit the job.
-- **Conflict detection** — overlapping jobs on the same machine are flagged on
-  the schedule and listed in a banner + the stats bar.
-- **Machines** — add/edit/delete machines (type, location, status:
-  operational / maintenance / down).
-- **Jobs** — schedule jobs on a machine with start/end time, quantity, and
-  status (scheduled / in progress / done).
-- **Stats bar** — live counts of machines, jobs, total scheduled hours, and
-  conflicts.
+- **Schedule view** — Gantt timeline (machines × hours of a day). Each bar is an
+  operation placed on its assigned machine, color-coded by status and labelled
+  with `part · Op#`. Click a bar to edit the operation.
+- **Work orders + routing** — expandable cards listing each part's operations
+  with live duration roll-up and a LATE flag when the schedule runs past the due
+  date.
+- **Auto-schedule** — one click sequences a work order's operations respecting
+  **routing order** (Op N starts after Op N-1 finishes) **and machine
+  availability** (no overlap with operations already booked on that machine).
+- **Conflict detection** — overlapping operations on the same machine are flagged
+  on the schedule, in a banner, and in the stats bar.
+- **Stats bar** — machines, work orders, operations, total scheduled hours, and
+  conflicts at a glance; per-machine load shown on the Machines tab.
 
 ## API
 
 | Method | Path | Description |
 |--------|------|-------------|
 | GET    | `/api/machines` | list machines |
+| GET    | `/api/machine-types` | suggested machine type list |
 | POST   | `/api/machines` | create machine |
-| PUT    | `/api/machines/{id}` | update machine |
-| DELETE | `/api/machines/{id}` | delete machine (+ its jobs) |
-| GET    | `/api/jobs` | list jobs |
-| POST   | `/api/jobs` | create job |
-| PUT    | `/api/jobs/{id}` | update job |
-| DELETE | `/api/jobs/{id}` | delete job |
-| GET    | `/api/conflicts` | overlapping jobs per machine |
+| PUT/DELETE | `/api/machines/{id}` | update / delete machine |
+| GET    | `/api/work-orders` | list work orders (each with its operations) |
+| POST   | `/api/work-orders` | create work order |
+| PUT/DELETE | `/api/work-orders/{id}` | update / delete work order (cascades operations) |
+| POST   | `/api/work-orders/{id}/auto-schedule` | sequence its operations |
+| GET    | `/api/operations` | list all operations |
+| POST   | `/api/operations` | create operation |
+| PUT/DELETE | `/api/operations/{id}` | update / delete operation |
+| GET    | `/api/conflicts` | overlapping operations per machine |
 | GET    | `/api/stats` | summary counts + per-machine hours |
 
 ## Files
 
 ```
 machine_planner/
-├── server.py          # stdlib HTTP server + REST API + domain logic
+├── server.py          # stdlib HTTP server, REST API, scheduler, conflict logic
 ├── db.py              # SQLite persistence + seed data
 ├── test_planner.py    # smoke tests (no deps)
 ├── static/
@@ -68,7 +88,9 @@ python3 test_planner.py
 
 ## Roadmap ideas
 
-- Drag-to-reschedule bars on the Gantt
-- Multi-day / week view and machine maintenance windows
-- Capacity/throughput-aware auto-scheduling and conflict resolution
-- Authentication + multi-user if this graduates from an internal tool
+- Working calendar / shifts (the auto-scheduler currently packs time linearly
+  rather than around shop hours)
+- Drag-to-reschedule bars on the Gantt; multi-day / week view
+- Machine capability matching (only allow ops on machines of the right type)
+- Capacity & WIP limits, maintenance windows, and finite-capacity loading
+- Shop-floor status updates (start/complete an op) and progress tracking
