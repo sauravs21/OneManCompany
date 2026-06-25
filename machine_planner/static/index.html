@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manufacturing Process Planner</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">⚙️</span>
+      <h1>Manufacturing Process Planner</h1>
+    </div>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-view="schedule">Schedule</button>
+    <button class="tab" data-view="workorders">Work Orders</button>
+    <button class="tab" data-view="machines">Machines</button>
+  </nav>
+
+  <main>
+    <!-- SCHEDULE / GANTT -->
+    <section id="view-schedule" class="view active">
+      <div class="toolbar">
+        <div class="legend">
+          <span class="chip status-pending">pending</span>
+          <span class="chip status-scheduled">scheduled</span>
+          <span class="chip status-in_progress">in progress</span>
+          <span class="chip status-done">done</span>
+          <span class="chip conflict">conflict</span>
+        </div>
+        <div class="toolbar-actions">
+          <label>Day <input type="date" id="schedule-date" /></label>
+        </div>
+      </div>
+      <div id="conflict-banner" class="banner hidden"></div>
+      <div class="gantt-wrap"><div id="gantt" class="gantt"></div></div>
+      <p class="hint">Bars are operations placed on their assigned machine. Click a bar to edit the operation.
+        Plan a part's routing under <b>Work Orders</b>, then hit <b>Auto-schedule</b>.</p>
+    </section>
+
+    <!-- WORK ORDERS -->
+    <section id="view-workorders" class="view">
+      <div class="toolbar">
+        <h2>Work Orders</h2>
+        <button class="btn primary" id="add-wo-btn">+ New work order</button>
+      </div>
+      <div id="wo-list"></div>
+    </section>
+
+    <!-- MACHINES -->
+    <section id="view-machines" class="view">
+      <div class="toolbar">
+        <h2>Machines</h2>
+        <button class="btn primary" id="add-machine-btn">+ Add machine</button>
+      </div>
+      <table class="data-table" id="machines-table">
+        <thead>
+          <tr><th>Name</th><th>Type</th><th>Location</th><th>Status</th><th>Load (h)</th><th>Notes</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal" class="modal-overlay hidden">
+    <div class="modal">
+      <h3 id="modal-title">Edit</h3>
+      <form id="modal-form" onsubmit="return false"></form>
+      <div class="modal-actions">
+        <button class="btn" id="modal-cancel">Cancel</button>
+        <button class="btn primary" id="modal-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
